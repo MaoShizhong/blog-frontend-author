@@ -5,6 +5,11 @@ export default {
         fontFamily: {
             jost: ['Jost', 'sans-serif', 'system-ui'],
         },
+        extend: {
+            width: {
+                form: 'min(90vw,900px)',
+            },
+        },
     },
     plugins: [],
 };

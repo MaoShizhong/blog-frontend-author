@@ -9,14 +9,14 @@ type User = {
 
 type RedirectFunctions = {
     redirectToLogin: () => void;
-    redirectToPosts: () => void;
+    redirectToPosts: (user?: User) => void;
 };
 
 export const UserContext = createContext<User & RedirectFunctions>({
     username: null,
     accessToken: null,
-    redirectToLogin: () => {},
-    redirectToPosts: () => {},
+    redirectToLogin: (): void => {},
+    redirectToPosts: (): void => {},
 });
 
 export function App() {
@@ -47,10 +47,14 @@ export function App() {
     }, []);
 
     function redirectToLogin(): void {
+        setUser({ username: null, accessToken: null });
         navigateTo('/login', { replace: true });
     }
 
-    function redirectToPosts(): void {
+    function redirectToPosts(user?: User): void {
+        if (user) {
+            setUser({ username: user.username, accessToken: user.accessToken });
+        }
         navigateTo('/posts', { replace: true });
     }
 
