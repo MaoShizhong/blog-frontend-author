@@ -2,7 +2,9 @@
 export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     theme: {
-        extend: {},
+        fontFamily: {
+            jost: ['Jost', 'sans-serif', 'system-ui'],
+        },
     },
     plugins: [],
 };
