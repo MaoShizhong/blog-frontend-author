@@ -50,7 +50,11 @@ export function Header() {
                             <NavLink to="/posts" className="transition hover:text-slate-500">
                                 Posts
                             </NavLink>
-                            <NavLink to="/posts/new" className="transition hover:text-slate-500">
+                            <NavLink
+                                to="/posts/new"
+                                state={{ postToEdit: null }}
+                                className="transition hover:text-slate-500"
+                            >
                                 New Post
                             </NavLink>
                             <button className="transition hover:text-slate-500" onClick={logout}>

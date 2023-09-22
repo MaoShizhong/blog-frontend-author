@@ -37,7 +37,7 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
         try {
             const res = await fetch(
                 `http://localhost:5000/auth/${loginType}`,
-                getFormOptions('POST', formData)
+                getFormOptions({ method: 'POST', formData: formData })
             );
 
             if (res.ok) {

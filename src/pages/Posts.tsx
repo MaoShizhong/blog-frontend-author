@@ -3,6 +3,7 @@ import { UserContext } from '../App';
 import { Link } from 'react-router-dom';
 import { Errors } from './AccountHandler';
 import { ErrorList } from '../components/ErrorList';
+import { getFormOptions } from '../helpers/form_options';
 
 type Author = {
     name: string;
@@ -19,6 +20,7 @@ export type Post = {
     category: Category;
     text: string[];
     isPublished: boolean;
+    url: string;
 };
 
 export function Posts() {
@@ -32,11 +34,12 @@ export function Posts() {
     }, [username, redirectToLogin]);
 
     useEffect((): void => {
-        async function getAllPosts() {
+        (async (): Promise<void> => {
             try {
-                const res = await fetch('http://localhost:5000/posts', {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
+                const res = await fetch(
+                    'http://localhost:5000/posts',
+                    getFormOptions({ method: 'GET', accessToken: accessToken })
+                );
 
                 const resAsJSON = await res.json();
 
@@ -44,9 +47,7 @@ export function Posts() {
             } catch (error) {
                 console.error(error);
             }
-        }
-
-        getAllPosts();
+        })();
     }, [accessToken]);
 
     return (

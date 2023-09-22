@@ -38,16 +38,14 @@ export function App() {
     function redirectToPosts(user?: User): void {
         if (user) {
             setUser({ username: user.username, accessToken: user.accessToken });
-            console.log(user.accessToken);
         }
         navigateTo('/posts', { replace: true });
     }
 
     async function refreshAccessToken(): Promise<void> {
-        console.log('refreshing');
         // Check if user is already logged in and has a valid refresh token
         // Refresh token in httpOnly cookie - cannot directly access here
-        const res = await fetch('http://localhost:5000/auth/refresh');
+        const res = await fetch('http://localhost:5000/auth/refresh', { credentials: 'include' });
 
         if (res.ok) {
             // Triggers only if status 200-299 i.e. valid refresh token found

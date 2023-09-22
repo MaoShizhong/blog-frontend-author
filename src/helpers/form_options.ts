@@ -1,26 +1,43 @@
-type HTTPVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type HTTPVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+type Headers = { [key: string]: string };
+
 type FormOptions = {
     method: HTTPVerb;
-    headers: { [key: string]: string };
-    body: URLSearchParams;
+    headers: Headers;
+    body?: URLSearchParams;
 };
 
-export function getFormOptions(
-    method: HTTPVerb,
-    formData: FormData,
-    accessToken?: string | null
-): FormOptions {
-    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-    const headersWithAuth = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Bearer ${accessToken}`,
+type FetchOptions = {
+    method: HTTPVerb;
+    formData?: FormData;
+    accessToken?: string | null;
+};
+
+export function getFormOptions(options: FetchOptions): FormOptions {
+    const formOptions: FormOptions = {
+        method: options.method,
+        headers: getHeaders(options.accessToken),
     };
 
-    return {
-        method: method,
-        headers: accessToken ? headersWithAuth : headers,
+    if (options.formData) {
         // Unable to resolve "missing size/sort fields from type"
         // eslint-disable-next-line
-        body: new URLSearchParams(formData as any),
+        formOptions.body = new URLSearchParams(options.formData as any);
+    }
+
+    return formOptions;
+}
+
+function getHeaders(accessToken?: string | null): Headers {
+    const headers: Headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        credentials: 'include',
     };
+
+    if (accessToken) {
+        headers['Authorization'] = accessToken;
+    }
+
+    return headers;
 }
