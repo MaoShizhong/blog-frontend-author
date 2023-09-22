@@ -1,12 +1,76 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App';
+import { Link } from 'react-router-dom';
+import { Errors } from './AccountHandler';
+import { ErrorList } from '../components/ErrorList';
+
+type Author = {
+    name: string;
+    username: string;
+};
+
+type Category = 'javascript/typescript' | 'html' | 'css' | 'other';
+
+export type Post = {
+    _id: string;
+    author: Author;
+    title: string;
+    timestamp: string;
+    category: Category;
+    text: string[];
+    isPublished: boolean;
+};
 
 export function Posts() {
-    const { username, redirectToLogin } = useContext(UserContext);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [errors, setErrors] = useState<Errors>(null);
+
+    const { username, accessToken, redirectToLogin } = useContext(UserContext);
 
     useEffect((): void => {
         if (!username) redirectToLogin();
     }, [username, redirectToLogin]);
 
-    return <div>Posts</div>;
+    useEffect((): void => {
+        async function getAllPosts() {
+            try {
+                const res = await fetch('http://localhost:5000/posts', {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+
+                const resAsJSON = await res.json();
+
+                res.ok ? setPosts(resAsJSON) : setErrors(resAsJSON);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        getAllPosts();
+    }, [accessToken]);
+
+    return (
+        <main className="flex-1 w-full p-10">
+            {errors && <ErrorList errors={errors} />}
+
+            {posts.map((post, i) => (
+                <article key={i} className="my-6">
+                    <Link
+                        to={post._id}
+                        state={{ post: post }}
+                        className="text-3xl transition hover:text-slate-500"
+                    >
+                        {post.title}
+                    </Link>
+                    <p className="text-sm italic">
+                        {new Date(post.timestamp).toDateString()} -{' '}
+                        {post.isPublished ? 'Published' : 'Unpublished'}
+                    </p>
+                    <p>
+                        By {post.author.name} ({post.author.username})
+                    </p>
+                </article>
+            ))}
+        </main>
+    );
 }

@@ -38,6 +38,7 @@ export function App() {
     function redirectToPosts(user?: User): void {
         if (user) {
             setUser({ username: user.username, accessToken: user.accessToken });
+            console.log(user.accessToken);
         }
         navigateTo('/posts', { replace: true });
     }
@@ -54,7 +55,6 @@ export function App() {
             const { username } = await res.json();
 
             setUser({ username, accessToken });
-            console.log('set');
         } else {
             // Force log out if no valid refresh token
             await fetch('http://localhost:5000/auth/logout');

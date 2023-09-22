@@ -6,7 +6,7 @@ import { useContext } from 'react';
 export function Header() {
     const { pathname } = useLocation();
 
-    const { redirectToLogin } = useContext(UserContext);
+    const { username, redirectToLogin } = useContext(UserContext);
 
     async function logout(): Promise<void> {
         await fetch('http://localhost:5000/auth/logout');
@@ -30,25 +30,30 @@ export function Header() {
                         />
                     </a>
                 </div>
+
+                {username && (
+                    <h2 className="hidden text-lg select-none sm:block">Hello, {username}!</h2>
+                )}
+
                 <nav className="flex gap-4">
                     {['/login', '/signup'].includes(pathname) ? (
                         <>
-                            <NavLink to="/login" className="transition hover:scale-125">
+                            <NavLink to="/login" className="transition hover:text-slate-500">
                                 Login
                             </NavLink>
-                            <NavLink to="/signup" className="transition hover:scale-125">
+                            <NavLink to="/signup" className="transition hover:text-slate-500">
                                 Sign up
                             </NavLink>
                         </>
                     ) : (
                         <>
-                            <NavLink to="/posts" className="transition hover:scale-125">
+                            <NavLink to="/posts" className="transition hover:text-slate-500">
                                 Posts
                             </NavLink>
-                            <NavLink to="/posts/new" className="transition hover:scale-125">
+                            <NavLink to="/posts/new" className="transition hover:text-slate-500">
                                 New Post
                             </NavLink>
-                            <button className="transition hover:scale-125" onClick={logout}>
+                            <button className="transition hover:text-slate-500" onClick={logout}>
                                 Logout
                             </button>
                         </>
