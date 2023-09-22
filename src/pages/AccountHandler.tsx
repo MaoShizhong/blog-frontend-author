@@ -1,6 +1,6 @@
 import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { UserContext } from '../App';
-import { formOptions } from '../helpers/form_options';
+import { getFormOptions } from '../helpers/form_options';
 import { SignupFormFields } from '../components/SignupFormFields';
 import { LoginFormFields } from '../components/LoginFormFields';
 
@@ -35,12 +35,10 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
         const formData = new FormData(formRef.current!);
 
         try {
-            const res = await fetch(`http://localhost:5000/auth/${loginType}`, {
-                ...formOptions,
-                // Unable to resolve "missing size/sort fields from type"
-                // eslint-disable-next-line
-                body: new URLSearchParams(formData as any),
-            });
+            const res = await fetch(
+                `http://localhost:5000/auth/${loginType}`,
+                getFormOptions('POST', formData)
+            );
 
             if (res.ok) {
                 redirectToPosts({

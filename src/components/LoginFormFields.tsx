@@ -1,4 +1,4 @@
-import { ErrorList } from './Errors';
+import { ErrorList } from './ErrorList';
 import { Errors } from '../pages/AccountHandler';
 
 type LoginFormFieldsProps = {

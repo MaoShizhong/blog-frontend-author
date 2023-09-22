@@ -1,8 +1,9 @@
 import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { UserContext } from '../App';
-import { ErrorList } from '../components/Errors';
+import { ErrorList } from '../components/ErrorList';
 import { Errors } from './AccountHandler';
-import { formOptions } from '../helpers/form_options';
+import { getFormOptions } from '../helpers/form_options';
+import { hasValidAccessToken } from '../helpers/token_validation';
 
 const categories = ['JavaScript/TypeScript', 'HTML', 'CSS', 'Other'] as const;
 
@@ -11,7 +12,7 @@ export function NewPost() {
     const [submitted, setSubmitted] = useState(false);
     const [newPostURL, setNewPostURL] = useState('');
 
-    const { username, redirectToLogin } = useContext(UserContext);
+    const { username, accessToken, redirectToLogin, refreshAccessToken } = useContext(UserContext);
 
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -22,15 +23,18 @@ export function NewPost() {
     async function submitPost(e: FormEvent): Promise<void> {
         e.preventDefault();
 
+        if (!hasValidAccessToken(accessToken as string)) {
+            console.log('invalid access token - refreshing');
+            await refreshAccessToken();
+        }
+
         const formData = new FormData(formRef.current!);
 
         try {
-            const res = await fetch(`http://localhost:5000/posts`, {
-                ...formOptions,
-                // Unable to resolve "missing size/sort fields from type"
-                // eslint-disable-next-line
-                body: new URLSearchParams(formData as any),
-            });
+            const res = await fetch(
+                `http://localhost:5000/posts`,
+                getFormOptions('POST', formData, accessToken)
+            );
 
             if (res.ok) {
                 const { url } = await res.json();
@@ -68,6 +72,7 @@ export function NewPost() {
                     <label className="flex flex-col">
                         Title (required):
                         <input
+                            name="title"
                             type="text"
                             className="px-2 py-1 border border-black rounded-md"
                             required
@@ -76,7 +81,7 @@ export function NewPost() {
 
                     <label className="flex flex-col">
                         Category (required):
-                        <select className="p-1 border border-black rounded-md">
+                        <select name="category" className="p-1 border border-black rounded-md">
                             {categories.map(
                                 (category, i): JSX.Element => (
                                     <option key={i} value={category.toLowerCase()}>
@@ -90,6 +95,7 @@ export function NewPost() {
                     <label className="flex flex-col">
                         Text (required):
                         <textarea
+                            name="text"
                             rows={14}
                             className="px-2 py-1 border border-black rounded-md"
                             required
@@ -99,6 +105,7 @@ export function NewPost() {
                     <label className="flex self-end gap-2">
                         Publish?
                         <input
+                            name="publish"
                             type="checkbox"
                             className="px-2 py-1 border border-black rounded-md"
                         />

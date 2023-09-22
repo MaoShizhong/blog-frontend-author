@@ -1,4 +1,4 @@
-import { ErrorList } from './Errors';
+import { ErrorList } from './ErrorList';
 import { Errors } from '../pages/AccountHandler';
 
 type SignupFormProps = {
@@ -60,8 +60,8 @@ export function SignupFormFields({ errors }: SignupFormProps) {
             <label className="flex flex-col">
                 Enter authorisation password below:
                 <input
+                    name="authorPassword"
                     type="password"
-                    name="author-password"
                     className="px-2 py-1 border border-black rounded-md"
                     required
                 />

@@ -8,13 +8,15 @@ export function ErrorList({ errors }: ErrorsProps) {
     return (
         <>
             {errors?.errors && (
-                <ul>
+                <ul className="font-bold text-red-800">
                     {errors.errors.map((error, i) => (
                         <li key={i}>{error.msg}</li>
                     ))}
                 </ul>
             )}
-            {errors?.message && <p>{errors.message}</p>}
+            {errors?.message && (
+                <p className="font-bold text-center text-red-800">{errors.message}</p>
+            )}
         </>
     );
 }
