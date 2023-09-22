@@ -3,7 +3,7 @@ import { UserContext } from '../App';
 import { Link } from 'react-router-dom';
 import { Errors } from './AccountHandler';
 import { ErrorList } from '../components/ErrorList';
-import { getFormOptions } from '../helpers/form_options';
+import { getFetchOptions } from '../helpers/form_options';
 
 type Author = {
     name: string;
@@ -27,7 +27,7 @@ export function Posts() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [errors, setErrors] = useState<Errors>(null);
 
-    const { username, accessToken, redirectToLogin } = useContext(UserContext);
+    const { username, redirectToLogin } = useContext(UserContext);
 
     useEffect((): void => {
         if (!username) redirectToLogin();
@@ -36,10 +36,7 @@ export function Posts() {
     useEffect((): void => {
         (async (): Promise<void> => {
             try {
-                const res = await fetch(
-                    'http://localhost:5000/posts',
-                    getFormOptions({ method: 'GET', accessToken: accessToken })
-                );
+                const res = await fetch('http://localhost:5000/posts', getFetchOptions('GET'));
 
                 const resAsJSON = await res.json();
 
@@ -48,7 +45,7 @@ export function Posts() {
                 console.error(error);
             }
         })();
-    }, [accessToken]);
+    }, []);
 
     return (
         <main className="flex-1 w-full p-10">

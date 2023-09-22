@@ -1,6 +1,6 @@
 import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { UserContext } from '../App';
-import { getFormOptions } from '../helpers/form_options';
+import { getFetchOptions } from '../helpers/form_options';
 import { SignupFormFields } from '../components/SignupFormFields';
 import { LoginFormFields } from '../components/LoginFormFields';
 
@@ -37,14 +37,12 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
         try {
             const res = await fetch(
                 `http://localhost:5000/auth/${loginType}`,
-                getFormOptions({ method: 'POST', formData: formData })
+                getFetchOptions('POST', formData)
             );
 
             if (res.ok) {
-                redirectToPosts({
-                    ...(await res.json()),
-                    accessToken: res.headers.get('authorization'),
-                });
+                const user = await res.json();
+                redirectToPosts(user.username);
             } else {
                 // Mostly form validation errors
                 setErrors(await res.json());

@@ -3,14 +3,14 @@ import { UserContext } from '../App';
 import { Link, useLocation } from 'react-router-dom';
 import { Post } from './Posts';
 import sanitizeHTML from 'sanitize-html';
-import { getFormOptions } from '../helpers/form_options';
+import { getFetchOptions } from '../helpers/form_options';
 
 export function IndividualPost() {
     const { post } = useLocation().state;
 
     const [currentPost, setCurrentPost] = useState(post as Post);
 
-    const { username, accessToken, redirectToLogin } = useContext(UserContext);
+    const { username, redirectToLogin } = useContext(UserContext);
 
     useEffect((): void => {
         if (!username) redirectToLogin();
@@ -20,10 +20,29 @@ export function IndividualPost() {
         try {
             const res = await fetch(
                 `http://localhost:5000/posts/${currentPost._id}?publish=${isToBePublished}`,
-                getFormOptions({ method: 'PATCH', accessToken: accessToken })
+                getFetchOptions('PATCH')
             );
 
-            if (res.ok) setCurrentPost(await res.json());
+            if (res.ok) {
+                setCurrentPost(await res.json());
+            } else {
+                const refreshRes = await fetch(
+                    'http://localhost:5000/auth/refresh',
+                    getFetchOptions('GET')
+                );
+
+                if (refreshRes.ok) {
+                    const retryRes = await fetch(
+                        `http://localhost:5000/posts/${currentPost._id}?publish=${isToBePublished}`,
+                        getFetchOptions('PATCH')
+                    );
+                    if (retryRes.ok) {
+                        setCurrentPost(await retryRes.json());
+                    }
+                } else {
+                    redirectToLogin();
+                }
+            }
         } catch (error) {
             console.error(error);
         }
@@ -31,31 +50,37 @@ export function IndividualPost() {
 
     return (
         <main className="flex-1 px-2 py-8 sm:p-10 w-form">
-            <div className="flex flex-col items-center gap-2 mb-4">
-                <Link to="edit" state={{ postToEdit: currentPost }}>
-                    {'>'} Edit post {'<'}
-                </Link>
-                {currentPost.isPublished ? (
-                    <>
-                        <a href={currentPost.url} className="transition hover:text-slate-600">
-                            <button>
-                                {'>'} Link to published post {'<'}
-                            </button>
-                        </a>
+            <div className="flex flex-col items-center gap-3 mb-4">
+                <div className="flex gap-8">
+                    <Link
+                        to="edit"
+                        className="transition hover:text-slate-600"
+                        state={{ postToEdit: currentPost }}
+                    >
+                        Edit post
+                    </Link>
+                    {currentPost.isPublished ? (
                         <button
                             className="transition hover:text-slate-600"
                             onClick={(): Promise<void> => handlePublish(false)}
                         >
-                            {'>'} Unpublish post {'<'}
+                            Unpublish post
                         </button>
-                    </>
-                ) : (
-                    <button
-                        className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => handlePublish(true)}
-                    >
-                        {'>'} Publish post {'<'}
-                    </button>
+                    ) : (
+                        <button
+                            className="transition hover:text-slate-600"
+                            onClick={(): Promise<void> => handlePublish(true)}
+                        >
+                            Publish post
+                        </button>
+                    )}
+                </div>
+                {currentPost.isPublished && (
+                    <a href={currentPost.url} className="transition hover:text-slate-600">
+                        <button>
+                            {'>'} Link to published post {'<'}
+                        </button>
+                    </a>
                 )}
             </div>
 
@@ -72,7 +97,7 @@ export function IndividualPost() {
                         (paragraph: string, i: number): JSX.Element => (
                             <p
                                 key={i}
-                                className="my-4"
+                                className="my-4 whitespace-pre-wrap"
                                 dangerouslySetInnerHTML={{ __html: sanitizeHTML(paragraph) }}
                             />
                         )

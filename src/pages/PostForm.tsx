@@ -2,8 +2,7 @@ import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { UserContext } from '../App';
 import { ErrorList } from '../components/ErrorList';
 import { Errors } from './AccountHandler';
-import { getFormOptions, HTTPVerb } from '../helpers/form_options';
-import { hasValidAccessToken } from '../helpers/token_validation';
+import { getFetchOptions, HTTPVerb } from '../helpers/form_options';
 import { useLocation } from 'react-router-dom';
 import sanitizeHTML from 'sanitize-html';
 
@@ -14,7 +13,7 @@ export function PostForm() {
     const [submitted, setSubmitted] = useState(false);
     const [newPostURL, setNewPostURL] = useState('');
 
-    const { username, accessToken, redirectToLogin, refreshAccessToken } = useContext(UserContext);
+    const { username, redirectToLogin } = useContext(UserContext);
 
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -37,11 +36,7 @@ export function PostForm() {
         try {
             const res = await fetch(
                 `http://localhost:5000${request.endpoint}`,
-                getFormOptions({
-                    method: request.method,
-                    formData: formData,
-                    accessToken: accessToken,
-                })
+                getFetchOptions(request.method, formData)
             );
 
             if (res.ok) {
@@ -92,17 +87,14 @@ export function PostForm() {
 
                     <label className="flex flex-col">
                         Category (required):
-                        <select name="category" className="p-1 border border-black rounded-md">
+                        <select
+                            name="category"
+                            defaultValue={postToEdit && postToEdit.category}
+                            className="p-1 border border-black rounded-md"
+                        >
                             {categories.map(
                                 (category, i): JSX.Element => (
-                                    <option
-                                        key={i}
-                                        value={category.toLowerCase()}
-                                        selected={
-                                            postToEdit &&
-                                            postToEdit.category === category.toLowerCase()
-                                        }
-                                    >
+                                    <option key={i} value={category.toLowerCase()}>
                                         {category}
                                     </option>
                                 )
@@ -116,10 +108,9 @@ export function PostForm() {
                             name="text"
                             rows={14}
                             className="px-2 py-1 border border-black rounded-md"
+                            defaultValue={sanitizeHTML(postToEdit && postToEdit.text.join('\n'))}
                             required
-                        >
-                            {sanitizeHTML(postToEdit && postToEdit.text.join('\n'))}
-                        </textarea>
+                        ></textarea>
                     </label>
 
                     <label className="flex self-end gap-2">
@@ -128,7 +119,7 @@ export function PostForm() {
                             name="publish"
                             type="checkbox"
                             className="px-2 py-1 border border-black rounded-md"
-                            checked={postToEdit && postToEdit.isPublished}
+                            defaultChecked={postToEdit && postToEdit.isPublished}
                         />
                     </label>
 
