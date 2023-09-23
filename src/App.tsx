@@ -23,9 +23,9 @@ export function App() {
 
     const navigateTo = useNavigate();
 
+    // needed to maintain login on refresh (cannot directly access httpOnly cookies)
     useEffect((): void => {
         refreshAccessToken();
-        console.clear();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

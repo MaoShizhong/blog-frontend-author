@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Post } from './Posts';
 import sanitizeHTML from 'sanitize-html';
 import { getFetchOptions } from '../helpers/form_options';
@@ -9,8 +9,11 @@ export function IndividualPost() {
     const { post } = useLocation().state;
 
     const [currentPost, setCurrentPost] = useState(post as Post);
+    const [askConfirmDelete, setAskConfirmDelete] = useState(false);
 
     const { username, redirectToLogin } = useContext(UserContext);
+
+    const navigateTo = useNavigate();
 
     useEffect((): void => {
         if (!username) redirectToLogin();
@@ -46,12 +49,62 @@ export function IndividualPost() {
         } catch (error) {
             console.error(error);
         }
+
+        // reset 'CONFIRM DELETE' button to 'Delete post' if previously clicked
+        setAskConfirmDelete(false);
+    }
+
+    async function deletePost(): Promise<void> {
+        try {
+            const res = await fetch(
+                `http://localhost:5000/posts/${currentPost._id}`,
+                getFetchOptions('DELETE')
+            );
+
+            if (res.ok) {
+                navigateTo('/posts', { replace: true });
+            } else {
+                const refreshRes = await fetch(
+                    'http://localhost:5000/auth/refresh',
+                    getFetchOptions('GET')
+                );
+
+                if (refreshRes.ok) {
+                    const retryRes = await fetch(
+                        `http://localhost:5000/posts/${currentPost._id}`,
+                        getFetchOptions('DELETE')
+                    );
+                    if (retryRes.ok) {
+                        navigateTo('/posts', { replace: true });
+                    }
+                } else {
+                    redirectToLogin();
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
         <main className="flex-1 px-2 py-8 sm:p-10 w-form">
             <div className="flex flex-col items-center gap-3 mb-4">
-                <div className="flex gap-8">
+                <div className="flex gap-10 sm:gap-28">
+                    {!currentPost.isPublished && askConfirmDelete ? (
+                        <button
+                            className="font-bold transition hover:text-slate-600"
+                            onClick={deletePost}
+                        >
+                            CONFIRM DELETE
+                        </button>
+                    ) : !currentPost.isPublished ? (
+                        <button
+                            className="transition hover:text-slate-600"
+                            onClick={(): void => setAskConfirmDelete(true)}
+                        >
+                            Delete post
+                        </button>
+                    ) : null}
                     <Link
                         to="edit"
                         className="transition hover:text-slate-600"
@@ -97,7 +150,7 @@ export function IndividualPost() {
                         (paragraph: string, i: number): JSX.Element => (
                             <p
                                 key={i}
-                                className="my-4 whitespace-pre-wrap"
+                                className="my-4 break-words whitespace-pre-wrap"
                                 dangerouslySetInnerHTML={{ __html: sanitizeHTML(paragraph) }}
                             />
                         )

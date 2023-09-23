@@ -48,11 +48,11 @@ export function Posts() {
     }, []);
 
     return (
-        <main className="flex-1 w-full p-10">
+        <main className="flex-1 py-6 w-form">
             {errors && <ErrorList errors={errors} />}
 
             {posts.map((post, i) => (
-                <article key={i} className="my-6">
+                <article key={i} className="sm:my-6">
                     <Link
                         to={post._id}
                         state={{ post: post }}
@@ -60,10 +60,16 @@ export function Posts() {
                     >
                         {post.title}
                     </Link>
+
                     <p className="text-sm italic">
                         {new Date(post.timestamp).toDateString()} -{' '}
                         {post.isPublished ? 'Published' : 'Unpublished'}
                     </p>
+
+                    <p className="text-sm">
+                        Category: <i>{post.category}</i>
+                    </p>
+
                     <p>
                         By {post.author.name} ({post.author.username})
                     </p>

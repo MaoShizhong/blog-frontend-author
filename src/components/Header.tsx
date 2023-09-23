@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { UserContext } from '../App';
 import { useContext } from 'react';
 import { getFetchOptions } from '../helpers/form_options';
@@ -18,7 +18,12 @@ export function Header() {
         <header className="flex items-center justify-center w-full gap-8 px-3 py-2 border-b shadow-md">
             <div className="flex items-center justify-between w-form">
                 <div className="flex items-center gap-2">
-                    <h1 className="text-3xl font-bold select-none sm:text-4xl">BLOG.</h1>
+                    <Link
+                        to={username ? '/posts' : '/login'}
+                        className="text-3xl font-bold select-none sm:text-4xl"
+                    >
+                        BLOG.
+                    </Link>
                     <a
                         href="https://github.com/MaoShizhong/blog-frontend-author"
                         target="_blank"
