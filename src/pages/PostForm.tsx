@@ -116,7 +116,7 @@ export function PostForm() {
                 Text (required):
                 <textarea
                     name="text"
-                    rows={14}
+                    rows={20}
                     className="px-2 py-1 leading-6 border border-black rounded-md"
                     defaultValue={postToEdit && he.decode(postToEdit.text.join('\n'))}
                     required

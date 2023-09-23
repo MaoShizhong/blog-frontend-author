@@ -49,11 +49,11 @@ export function Posts() {
     }, []);
 
     return (
-        <main className="p-8 mt-10 bg-white border-2 w-main drop-shadow-2xl border-slate-50 rounded-3xl">
+        <main className="px-6 mt-10 bg-white border-2 sm:px-10 w-main drop-shadow-2xl border-slate-50 rounded-3xl">
             {errors && <ErrorList errors={errors} />}
 
             {posts.map((post, i) => (
-                <article key={i} className="sm:my-6">
+                <article key={i} className="my-6 sm:my-10">
                     <Link
                         to={post._id}
                         state={{ post: post }}

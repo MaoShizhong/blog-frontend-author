@@ -16,7 +16,7 @@ export function Header() {
     }
 
     return (
-        <header className="flex items-center justify-center w-full gap-8 px-3 py-2 border-b shadow-md">
+        <header className="sticky top-0 z-10 flex items-center justify-center w-full gap-8 px-3 py-2 bg-white border-b shadow-md">
             <div className="flex items-center justify-between w-form">
                 <div className="flex items-center gap-2">
                     <Link
