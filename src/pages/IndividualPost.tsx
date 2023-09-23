@@ -32,7 +32,7 @@ export function IndividualPost() {
     async function handlePublish(isToBePublished: boolean): Promise<void> {
         try {
             const res = await fetch(
-                `${API_DOMAIN}/${currentPost._id}?publish=${isToBePublished}`,
+                `${API_DOMAIN}/posts/${currentPost._id}?publish=${isToBePublished}`,
                 getFetchOptions('PATCH')
             );
 
@@ -46,7 +46,7 @@ export function IndividualPost() {
 
                 if (refreshRes.ok) {
                     const retryRes = await fetch(
-                        `${API_DOMAIN}/${currentPost._id}?publish=${isToBePublished}`,
+                        `${API_DOMAIN}/posts/${currentPost._id}?publish=${isToBePublished}`,
                         getFetchOptions('PATCH')
                     );
                     if (retryRes.ok) {

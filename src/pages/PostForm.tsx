@@ -28,14 +28,14 @@ export function PostForm() {
 
         const request = {
             method: (postToEdit ? 'PUT' : 'POST') as HTTPVerb,
-            endpoint: postToEdit ? `/posts/${postToEdit._id}` : '/posts',
+            endpoint: postToEdit ? `posts/${postToEdit._id}` : '/posts',
         };
 
         const formData = new FormData(formRef.current!);
 
         try {
             const res = await fetch(
-                `${API_DOMAIN}${request.endpoint}`,
+                `${API_DOMAIN}/${request.endpoint}`,
                 getFetchOptions(request.method, formData)
             );
 
