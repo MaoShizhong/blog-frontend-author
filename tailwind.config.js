@@ -8,6 +8,7 @@ export default {
         extend: {
             width: {
                 form: 'min(90vw,900px)',
+                main: 'min(90vw,1100px)',
             },
         },
     },

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Post } from './Posts';
 import sanitizeHTML from 'sanitize-html';
 import { getFetchOptions } from '../helpers/form_options';
+import he from 'he';
 
 export function IndividualPost() {
     const { post } = useLocation().state;
@@ -87,76 +88,86 @@ export function IndividualPost() {
     }
 
     return (
-        <main className="flex-1 px-2 py-8 sm:p-10 w-form">
-            <div className="flex flex-col items-center gap-3 mb-4">
-                <div className="flex gap-10 sm:gap-28">
-                    {!currentPost.isPublished && askConfirmDelete ? (
-                        <button
-                            className="font-bold transition hover:text-slate-600"
-                            onClick={deletePost}
-                        >
-                            CONFIRM DELETE
-                        </button>
-                    ) : !currentPost.isPublished ? (
-                        <button
+        <main className="px-4 py-8 my-10 bg-white border-2 sm:px-14 w-main drop-shadow-2xl border-slate-50 rounded-3xl">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex flex-col items-center gap-3 mb-4">
+                    <div className="flex gap-10 sm:gap-28">
+                        {!currentPost.isPublished && askConfirmDelete ? (
+                            <button
+                                className="font-bold transition hover:text-slate-600"
+                                onClick={deletePost}
+                            >
+                                CONFIRM DELETE
+                            </button>
+                        ) : !currentPost.isPublished ? (
+                            <button
+                                className="transition hover:text-slate-600"
+                                onClick={(): void => setAskConfirmDelete(true)}
+                            >
+                                Delete post
+                            </button>
+                        ) : null}
+                        <Link
+                            to="edit"
                             className="transition hover:text-slate-600"
-                            onClick={(): void => setAskConfirmDelete(true)}
+                            state={{ postToEdit: currentPost }}
                         >
-                            Delete post
-                        </button>
-                    ) : null}
-                    <Link
-                        to="edit"
-                        className="transition hover:text-slate-600"
-                        state={{ postToEdit: currentPost }}
-                    >
-                        Edit post
-                    </Link>
-                    {currentPost.isPublished ? (
-                        <button
-                            className="transition hover:text-slate-600"
-                            onClick={(): Promise<void> => handlePublish(false)}
-                        >
-                            Unpublish post
-                        </button>
-                    ) : (
-                        <button
-                            className="transition hover:text-slate-600"
-                            onClick={(): Promise<void> => handlePublish(true)}
-                        >
-                            Publish post
-                        </button>
+                            Edit post
+                        </Link>
+                        {currentPost.isPublished ? (
+                            <button
+                                className="transition hover:text-slate-600"
+                                onClick={(): Promise<void> => handlePublish(false)}
+                            >
+                                Unpublish post
+                            </button>
+                        ) : (
+                            <button
+                                className="transition hover:text-slate-600"
+                                onClick={(): Promise<void> => handlePublish(true)}
+                            >
+                                Publish post
+                            </button>
+                        )}
+                    </div>
+                    {currentPost.isPublished && (
+                        <a href={currentPost.url} className="transition hover:text-slate-600">
+                            <button>
+                                {'>'} Link to published post {'<'}
+                            </button>
+                        </a>
                     )}
                 </div>
-                {currentPost.isPublished && (
-                    <a href={currentPost.url} className="transition hover:text-slate-600">
-                        <button>
-                            {'>'} Link to published post {'<'}
-                        </button>
-                    </a>
-                )}
+                <article className="mb-24">
+                    {/* textWrap not recognised but experimental in Chrome 114+ */}
+                    <h1
+                        className="mt-6 mb-4 text-3xl font-bold text-center sm:text-4xl"
+                        style={{ textWrap: 'balance' }}
+                    >
+                        {currentPost.title}
+                    </h1>
+                    <p className="mb-8 italic text-center">
+                        {currentPost.isPublished ? 'Published on ' : 'Unpublished - '}
+                        {new Date(currentPost.timestamp).toDateString()} - Written by{' '}
+                        {currentPost.author.name}
+                    </p>
+                    <section>
+                        {currentPost.text.map(
+                            (paragraph: string, i: number): JSX.Element => (
+                                <p
+                                    key={i}
+                                    className="my-2 break-words whitespace-pre-wrap"
+                                    dangerouslySetInnerHTML={{
+                                        __html: sanitizeHTML(he.decode(paragraph), {
+                                            allowedAttributes: { '*': ['style'] },
+                                        }),
+                                    }}
+                                />
+                            )
+                        )}
+                    </section>
+                </article>
             </div>
-
-            <article>
-                <h1 className="text-4xl font-bold text-center">{currentPost.title}</h1>
-                <p className="italic text-center">Written by {currentPost.author.name}</p>
-                <p className="mb-8 italic text-center">
-                    {currentPost.isPublished ? 'Published on ' : 'Unpublished - '}
-                    {new Date(currentPost.timestamp).toDateString()}
-                </p>
-
-                <section>
-                    {currentPost.text.map(
-                        (paragraph: string, i: number): JSX.Element => (
-                            <p
-                                key={i}
-                                className="my-4 break-words whitespace-pre-wrap"
-                                dangerouslySetInnerHTML={{ __html: sanitizeHTML(paragraph) }}
-                            />
-                        )
-                    )}
-                </section>
-            </article>
         </main>
     );
 }

@@ -4,7 +4,7 @@ import { ErrorList } from '../components/ErrorList';
 import { Errors } from './AccountHandler';
 import { getFetchOptions, HTTPVerb } from '../helpers/form_options';
 import { useLocation, useNavigate } from 'react-router-dom';
-import sanitizeHTML from 'sanitize-html';
+import he from 'he';
 
 const categories = ['JavaScript/TypeScript', 'HTML', 'CSS', 'Other'] as const;
 
@@ -69,7 +69,11 @@ export function PostForm() {
     }
 
     return (
-        <form onSubmit={submitPost} className="flex flex-col gap-4 my-10 w-form" ref={formRef}>
+        <form
+            onSubmit={submitPost}
+            className="flex flex-col gap-4 p-6 mt-10 bg-white border-2 w-form border-slate-50 rounded-3xl drop-shadow-2xl"
+            ref={formRef}
+        >
             <div className="text-center">
                 <h1 className="text-xl font-bold">
                     {postToEdit ? `Editing "${postToEdit.title}"` : 'New post'}
@@ -112,8 +116,8 @@ export function PostForm() {
                 <textarea
                     name="text"
                     rows={14}
-                    className="px-2 py-1 border border-black rounded-md"
-                    defaultValue={sanitizeHTML(postToEdit && postToEdit.text.join('\n'))}
+                    className="px-2 py-1 leading-6 border border-black rounded-md"
+                    defaultValue={postToEdit && he.decode(postToEdit.text.join('\n'))}
                     required
                 ></textarea>
             </label>
@@ -128,7 +132,7 @@ export function PostForm() {
                 />
             </label>
 
-            <button className="self-center px-4 py-1 transition bg-white border border-black rounded-md hover:scale-110">
+            <button className="self-center px-4 py-1 mt-2 transition bg-white border border-black rounded-md hover:scale-110">
                 {postToEdit ? 'Edit post' : 'Submit post'}
             </button>
         </form>

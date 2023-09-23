@@ -48,7 +48,7 @@ export function Posts() {
     }, []);
 
     return (
-        <main className="flex-1 py-6 w-form">
+        <main className="p-8 mt-10 bg-white border-2 w-main drop-shadow-2xl border-slate-50 rounded-3xl">
             {errors && <ErrorList errors={errors} />}
 
             {posts.map((post, i) => (
