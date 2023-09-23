@@ -23,10 +23,10 @@ export function Header() {
                         to={username ? '/posts' : '/login'}
                         className="text-3xl font-bold select-none sm:text-4xl"
                     >
-                        BLOG.
+                        .BLOG
                     </Link>
                     <a
-                        href="https://github.com/MaoShizhong/blog-frontend-author"
+                        href="https://github.com/MaoShizhong/blog-frontend-reader"
                         target="_blank"
                         rel="noreferrer"
                     >
