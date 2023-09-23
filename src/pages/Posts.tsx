@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Errors } from './AccountHandler';
 import { ErrorList } from '../components/ErrorList';
 import { getFetchOptions } from '../helpers/form_options';
+import { API_DOMAIN } from '../helpers/domain';
 
 type Author = {
     name: string;
@@ -36,7 +37,7 @@ export function Posts() {
     useEffect((): void => {
         (async (): Promise<void> => {
             try {
-                const res = await fetch('http://localhost:5000/posts', getFetchOptions('GET'));
+                const res = await fetch(`${API_DOMAIN}/posts`, getFetchOptions('GET'));
 
                 const resAsJSON = await res.json();
 

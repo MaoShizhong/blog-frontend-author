@@ -4,7 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Post } from './Posts';
 import sanitizeHTML from 'sanitize-html';
 import { getFetchOptions } from '../helpers/form_options';
-import he from 'he';
+import htmlEntities from 'he';
+import { API_DOMAIN } from '../helpers/domain';
 
 export function IndividualPost() {
     const { post } = useLocation().state;
@@ -31,7 +32,7 @@ export function IndividualPost() {
     async function handlePublish(isToBePublished: boolean): Promise<void> {
         try {
             const res = await fetch(
-                `http://localhost:5000/posts/${currentPost._id}?publish=${isToBePublished}`,
+                `${API_DOMAIN}/${currentPost._id}?publish=${isToBePublished}`,
                 getFetchOptions('PATCH')
             );
 
@@ -39,13 +40,13 @@ export function IndividualPost() {
                 setCurrentPost(await res.json());
             } else {
                 const refreshRes = await fetch(
-                    'http://localhost:5000/auth/refresh',
+                    `${API_DOMAIN}/auth/refresh`,
                     getFetchOptions('GET')
                 );
 
                 if (refreshRes.ok) {
                     const retryRes = await fetch(
-                        `http://localhost:5000/posts/${currentPost._id}?publish=${isToBePublished}`,
+                        `${API_DOMAIN}/${currentPost._id}?publish=${isToBePublished}`,
                         getFetchOptions('PATCH')
                     );
                     if (retryRes.ok) {
@@ -66,7 +67,7 @@ export function IndividualPost() {
     async function deletePost(): Promise<void> {
         try {
             const res = await fetch(
-                `http://localhost:5000/posts/${currentPost._id}`,
+                `${API_DOMAIN}/posts/${currentPost._id}`,
                 getFetchOptions('DELETE')
             );
 
@@ -74,13 +75,13 @@ export function IndividualPost() {
                 navigateTo('/posts', { replace: true });
             } else {
                 const refreshRes = await fetch(
-                    'http://localhost:5000/auth/refresh',
+                    `${API_DOMAIN}/auth/refresh`,
                     getFetchOptions('GET')
                 );
 
                 if (refreshRes.ok) {
                     const retryRes = await fetch(
-                        `http://localhost:5000/posts/${currentPost._id}`,
+                        `${API_DOMAIN}/posts/${currentPost._id}`,
                         getFetchOptions('DELETE')
                     );
                     if (retryRes.ok) {
@@ -166,7 +167,7 @@ export function IndividualPost() {
                                     key={i}
                                     className="my-2 break-words whitespace-pre-wrap"
                                     dangerouslySetInnerHTML={{
-                                        __html: sanitizeHTML(he.decode(paragraph), {
+                                        __html: sanitizeHTML(htmlEntities.decode(paragraph), {
                                             allowedAttributes: { '*': ['style'] },
                                         }),
                                     }}

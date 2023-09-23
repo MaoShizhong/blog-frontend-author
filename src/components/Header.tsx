@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { UserContext } from '../App';
 import { useContext } from 'react';
 import { getFetchOptions } from '../helpers/form_options';
+import { API_DOMAIN } from '../helpers/domain';
 
 export function Header() {
     const { pathname } = useLocation();
@@ -10,7 +11,7 @@ export function Header() {
     const { username, redirectToLogin } = useContext(UserContext);
 
     async function logout(): Promise<void> {
-        await fetch('http://localhost:5000/auth/logout', getFetchOptions('GET'));
+        await fetch(`${API_DOMAIN}/auth/logout`, getFetchOptions('GET'));
         redirectToLogin();
     }
 

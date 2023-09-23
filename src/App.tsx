@@ -2,6 +2,7 @@ import { Header } from './components/Header';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState, createContext } from 'react';
 import { getFetchOptions } from './helpers/form_options';
+import { API_DOMAIN } from './helpers/domain';
 
 type User = string | null;
 
@@ -43,7 +44,7 @@ export function App() {
     }
 
     async function refreshAccessToken(): Promise<void> {
-        const res = await fetch('http://localhost:5000/auth/refresh', getFetchOptions('GET'));
+        const res = await fetch(`${API_DOMAIN}/auth/refresh`, getFetchOptions('GET'));
 
         if (res.ok) {
             // Triggers only if status 200-299 i.e. valid refresh token found
@@ -51,7 +52,7 @@ export function App() {
             redirectToPosts(username);
         } else {
             // Force log out if no valid refresh token
-            await fetch('http://localhost:5000/auth/logout');
+            await fetch(`${API_DOMAIN}/auth/logout`);
             redirectToLogin();
         }
     }

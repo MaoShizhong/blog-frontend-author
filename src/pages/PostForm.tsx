@@ -5,6 +5,7 @@ import { Errors } from './AccountHandler';
 import { getFetchOptions, HTTPVerb } from '../helpers/form_options';
 import { useLocation, useNavigate } from 'react-router-dom';
 import he from 'he';
+import { API_DOMAIN } from '../helpers/domain';
 
 const categories = ['JavaScript/TypeScript', 'HTML', 'CSS', 'Other'] as const;
 
@@ -34,7 +35,7 @@ export function PostForm() {
 
         try {
             const res = await fetch(
-                `http://localhost:5000${request.endpoint}`,
+                `${API_DOMAIN}${request.endpoint}`,
                 getFetchOptions(request.method, formData)
             );
 
@@ -43,13 +44,13 @@ export function PostForm() {
                 navigateTo(`/posts/${post._id}`, { replace: true, state: { post: post } });
             } else {
                 const refreshRes = await fetch(
-                    'http://localhost:5000/auth/refresh',
+                    `${API_DOMAIN}/auth/refresh`,
                     getFetchOptions('GET')
                 );
 
                 if (refreshRes.ok) {
                     const retryRes = await fetch(
-                        `http://localhost:5000${request.endpoint}`,
+                        `${API_DOMAIN}${request.endpoint}`,
                         getFetchOptions(request.method, formData)
                     );
 

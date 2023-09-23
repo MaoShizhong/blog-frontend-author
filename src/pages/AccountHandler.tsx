@@ -3,6 +3,7 @@ import { UserContext } from '../App';
 import { getFetchOptions } from '../helpers/form_options';
 import { SignupFormFields } from '../components/SignupFormFields';
 import { LoginFormFields } from '../components/LoginFormFields';
+import { API_DOMAIN } from '../helpers/domain';
 
 type ValidationError = {
     type: string;
@@ -36,7 +37,7 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
 
         try {
             const res = await fetch(
-                `http://localhost:5000/auth/${loginType}`,
+                `${API_DOMAIN}/auth/${loginType}`,
                 getFetchOptions('POST', formData)
             );
 
