@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { UserContext } from '../App';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Post } from './Posts';
@@ -14,11 +14,19 @@ export function IndividualPost() {
 
     const { username, redirectToLogin } = useContext(UserContext);
 
+    const titleRef = useRef<HTMLHeadingElement>(null);
+
     const navigateTo = useNavigate();
 
     useEffect((): void => {
         if (!username) redirectToLogin();
     }, [username, redirectToLogin]);
+
+    // Bypasses Vite error when assigning `textWrap` property within JSX style object
+    // (experimental CSS feature in Chrome 114+)
+    useEffect((): void => {
+        titleRef.current!.style.cssText = 'text-wrap: balance';
+    }, []);
 
     async function handlePublish(isToBePublished: boolean): Promise<void> {
         try {
@@ -142,7 +150,7 @@ export function IndividualPost() {
                     {/* textWrap not recognised but experimental in Chrome 114+ */}
                     <h1
                         className="mt-6 mb-4 text-3xl font-bold text-center sm:text-4xl"
-                        style={{ textWrap: 'balance' }}
+                        ref={titleRef}
                     >
                         {currentPost.title}
                     </h1>
