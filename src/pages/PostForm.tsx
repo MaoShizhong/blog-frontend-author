@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import he from 'he';
 import { API_DOMAIN } from '../helpers/domain';
 
-const categories = ['JavaScript/TypeScript', 'HTML', 'CSS', 'Other'] as const;
+const categories = ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'] as const;
 
 export function PostForm() {
     const [errors, setErrors] = useState<Errors>(null);
@@ -50,7 +50,7 @@ export function PostForm() {
 
                 if (refreshRes.ok) {
                     const retryRes = await fetch(
-                        `${API_DOMAIN}${request.endpoint}`,
+                        `${API_DOMAIN}/${request.endpoint}`,
                         getFetchOptions(request.method, formData)
                     );
 
@@ -118,7 +118,7 @@ export function PostForm() {
                     name="text"
                     rows={20}
                     className="px-2 py-1 leading-6 border border-black rounded-md"
-                    defaultValue={postToEdit && he.decode(postToEdit.text.join('\n'))}
+                    defaultValue={postToEdit && he.decode(postToEdit.text)}
                     required
                 ></textarea>
             </label>

@@ -38,6 +38,7 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
 
             if (res.ok) {
                 const { editedPost, existingFeaturedPosts } = await res.json();
+
                 setCurrentPost(editedPost);
 
                 if (action === 'feature') {
@@ -108,7 +109,7 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
 
     return (
         <div className="flex flex-col items-center gap-3 mb-4">
-            {existingFeatures && (
+            {existingFeatures && !!existingFeatures.length && (
                 <div>
                     <p className="font-bold text-center text-red-800">
                         The following posts are also marked as featured:
