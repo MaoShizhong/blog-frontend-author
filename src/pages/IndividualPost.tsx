@@ -51,7 +51,7 @@ export function IndividualPost() {
 
                     <Markdown
                         className="prose prose-pre:p-0"
-                        children={htmlEntities.decode(currentPost.text.join('\n'))}
+                        children={htmlEntities.decode(currentPost.text)}
                         components={{
                             code({ className, children }) {
                                 const match = /language-(\w+)/.exec(className || '');

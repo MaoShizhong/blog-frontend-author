@@ -27,6 +27,7 @@ export function App() {
     // needed to maintain login on refresh (cannot directly access httpOnly cookies)
     useEffect((): void => {
         refreshAccessToken();
+        // disabled as adding dependency causes infinite requests - specifically on need to run once on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

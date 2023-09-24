@@ -1,5 +1,5 @@
 import { Post } from '../pages/Posts';
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getFetchOptions } from '../helpers/form_options';
 import { API_DOMAIN } from '../helpers/domain';
@@ -12,20 +12,37 @@ type PostButtonsProps = {
 
 export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
     const [askConfirmDelete, setAskConfirmDelete] = useState(false);
+    const [existingFeatures, setExistingFeatures] = useState<Post[] | null>(null);
 
     const { redirectToLogin } = useContext(UserContext);
 
     const navigateTo = useNavigate();
 
-    async function togglePublish(isToBePublished: boolean): Promise<void> {
+    // in order to show a list of already featured posts upon loading page (and not just show when
+    // the feature button is toggled)
+    useEffect((): void => {
+        toggleFeaturedPublished('feature', currentPost.isFeatured);
+        // disabled as adding dependency causes infinite requests - specifically on need to run once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    async function toggleFeaturedPublished(
+        action: 'feature' | 'publish',
+        isToActivate: boolean
+    ): Promise<void> {
         try {
             const res = await fetch(
-                `${API_DOMAIN}/posts/${currentPost._id}?publish=${isToBePublished}`,
+                `${API_DOMAIN}/posts/${currentPost._id}?${action}=${isToActivate}`,
                 getFetchOptions('PATCH')
             );
 
             if (res.ok) {
-                setCurrentPost(await res.json());
+                const { editedPost, existingFeaturedPosts } = await res.json();
+                setCurrentPost(editedPost);
+
+                if (action === 'feature') {
+                    setExistingFeatures(existingFeaturedPosts);
+                }
             } else {
                 const refreshRes = await fetch(
                     `${API_DOMAIN}/auth/refresh`,
@@ -34,11 +51,16 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
 
                 if (refreshRes.ok) {
                     const retryRes = await fetch(
-                        `${API_DOMAIN}/posts/${currentPost._id}?publish=${isToBePublished}`,
+                        `${API_DOMAIN}/posts/${currentPost._id}?${action}=${isToActivate}`,
                         getFetchOptions('PATCH')
                     );
                     if (retryRes.ok) {
-                        setCurrentPost(await retryRes.json());
+                        const { editedPost, existingFeaturedPosts } = await res.json();
+                        setCurrentPost(editedPost);
+
+                        if (action === 'feature') {
+                            setExistingFeatures(existingFeaturedPosts);
+                        }
                     }
                 } else {
                     redirectToLogin();
@@ -86,6 +108,20 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
 
     return (
         <div className="flex flex-col items-center gap-3 mb-4">
+            {existingFeatures && (
+                <div>
+                    <p className="font-bold text-center text-red-800">
+                        The following posts are also marked as featured:
+                    </p>
+                    {existingFeatures.map(
+                        (featuredPost, i): JSX.Element => (
+                            <p key={i} className="text-center text-red-800">
+                                {featuredPost.title}
+                            </p>
+                        )
+                    )}
+                </div>
+            )}
             <div className="flex gap-10 sm:gap-28">
                 {!currentPost.isPublished && askConfirmDelete ? (
                     <button
@@ -99,29 +135,47 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
                         className="transition hover:text-slate-600"
                         onClick={(): void => setAskConfirmDelete(true)}
                     >
-                        Delete post
+                        Delete
                     </button>
                 ) : null}
+
                 <Link
                     to="edit"
                     className="transition hover:text-slate-600"
                     state={{ postToEdit: currentPost }}
                 >
-                    Edit post
+                    Edit
                 </Link>
-                {currentPost.isPublished ? (
+
+                {currentPost.isFeatured ? (
                     <button
                         className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => togglePublish(false)}
+                        onClick={(): Promise<void> => toggleFeaturedPublished('feature', false)}
                     >
-                        Unpublish post
+                        Unfeature
                     </button>
                 ) : (
                     <button
                         className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => togglePublish(true)}
+                        onClick={(): Promise<void> => toggleFeaturedPublished('feature', true)}
                     >
-                        Publish post
+                        Feature
+                    </button>
+                )}
+
+                {currentPost.isPublished ? (
+                    <button
+                        className="transition hover:text-slate-600"
+                        onClick={(): Promise<void> => toggleFeaturedPublished('publish', false)}
+                    >
+                        Unpublish
+                    </button>
+                ) : (
+                    <button
+                        className="transition hover:text-slate-600"
+                        onClick={(): Promise<void> => toggleFeaturedPublished('publish', true)}
+                    >
+                        Publish
                     </button>
                 )}
             </div>

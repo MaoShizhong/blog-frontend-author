@@ -19,8 +19,9 @@ export type Post = {
     title: string;
     timestamp: string;
     category: Category;
-    text: string[];
+    text: string;
     isPublished: boolean;
+    isFeatured: boolean;
     url: string;
 };
 
