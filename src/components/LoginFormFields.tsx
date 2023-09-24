@@ -8,7 +8,8 @@ type LoginFormFieldsProps = {
 export function LoginFormFields({ errors }: LoginFormFieldsProps) {
     return (
         <>
-            <h1 className="text-xl font-bold">Login</h1>
+            <h1 className="text-xl font-bold">.BLOG CMS</h1>
+            <h2 className="text-xl font-bold">Login</h2>
 
             {errors && <ErrorList errors={errors} />}
 
