@@ -181,7 +181,12 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
                 )}
             </div>
             {currentPost.isPublished && (
-                <a href={currentPost.url} className="transition hover:text-slate-600">
+                <a
+                    href={currentPost.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="transition hover:text-slate-600"
+                >
                     <button>
                         {'>'} Link to published post {'<'}
                     </button>
