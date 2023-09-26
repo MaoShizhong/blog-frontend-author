@@ -17,6 +17,8 @@ export type Post = {
     _id: string;
     author: Author;
     title: string;
+    imageURL: string;
+    objectFit: string;
     timestamp: string;
     category: Category;
     text: string;
@@ -54,27 +56,30 @@ export function Posts() {
             {errors && <ErrorList errors={errors} />}
 
             {posts.map((post, i) => (
-                <article key={i} className="my-6 sm:my-10">
-                    <Link
-                        to={post._id}
-                        state={{ post: post }}
-                        className="text-3xl transition hover:text-slate-500"
-                    >
-                        {post.title}
-                    </Link>
-
-                    <p className="text-sm italic">
-                        {new Date(post.timestamp).toDateString()} -{' '}
-                        {post.isPublished ? 'Published' : 'Unpublished'}
-                    </p>
-
-                    <p className="text-sm">
-                        Category: <i>{post.category}</i>
-                    </p>
-
-                    <p>
-                        By {post.author.name} ({post.author.username})
-                    </p>
+                <article key={i} className="flex gap-2 my-6 sm:my-10">
+                    <img
+                        src={post.imageURL ?? '/default_article_icon.png'}
+                        className="object-cover h-10 m-1 rounded-md aspect-square"
+                    />
+                    <div>
+                        <Link
+                            to={post._id}
+                            state={{ post: post }}
+                            className="text-3xl transition hover:text-slate-500"
+                        >
+                            {post.title}
+                        </Link>
+                        <p className="text-sm italic">
+                            {new Date(post.timestamp).toDateString()} -{' '}
+                            {post.isPublished ? 'Published' : 'Unpublished'}
+                        </p>
+                        <p className="text-sm">
+                            Category: <i>{post.category}</i>
+                        </p>
+                        <p>
+                            By {post.author.name} ({post.author.username})
+                        </p>
+                    </div>
                 </article>
             ))}
         </main>

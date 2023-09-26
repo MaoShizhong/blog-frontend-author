@@ -8,6 +8,7 @@ import he from 'he';
 import { API_DOMAIN } from '../helpers/domain';
 
 const categories = ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'] as const;
+const objectFits = ['object-contain', 'object-cover'] as const;
 
 export function PostForm() {
     const [errors, setErrors] = useState<Errors>(null);
@@ -28,7 +29,7 @@ export function PostForm() {
 
         const request = {
             method: (postToEdit ? 'PUT' : 'POST') as HTTPVerb,
-            endpoint: postToEdit ? `posts/${postToEdit._id}` : '/posts',
+            endpoint: postToEdit ? `posts/${postToEdit._id}` : 'posts',
         };
 
         const formData = new FormData(formRef.current!);
@@ -93,6 +94,33 @@ export function PostForm() {
                     defaultValue={postToEdit && postToEdit.title}
                     required
                 />
+            </label>
+
+            <label className="flex flex-col">
+                Image URL:
+                <input
+                    name="image"
+                    type="text"
+                    className="px-2 py-1 border border-black rounded-md"
+                    defaultValue={postToEdit && postToEdit.imageURL}
+                />
+            </label>
+
+            <label className="flex flex-col">
+                Image object fit:
+                <select
+                    name="objectfit"
+                    defaultValue={postToEdit && postToEdit.objectFit}
+                    className="p-1 border border-black rounded-md"
+                >
+                    {objectFits.map(
+                        (fit, i): JSX.Element => (
+                            <option key={i} value={fit}>
+                                {fit}
+                            </option>
+                        )
+                    )}
+                </select>
             </label>
 
             <label className="flex flex-col">

@@ -56,7 +56,7 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
     return (
         <form
             onSubmit={(e: FormEvent): Promise<void> => login(e, loginType)}
-            className="flex flex-col items-center w-8/12 gap-4 p-6 mt-10 bg-white border-2 border-slate-50 rounded-3xl drop-shadow-2xl"
+            className="flex flex-col items-center object-contain w-8/12 gap-4 p-6 mt-10 bg-white border-2 border-slate-50 rounded-3xl drop-shadow-2xl"
             ref={formRef}
         >
             {loginType === 'login' ? (
