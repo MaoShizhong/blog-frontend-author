@@ -17,7 +17,8 @@ export type Post = {
     _id: string;
     author: Author;
     title: string;
-    imageURL: string;
+    imageURL?: string;
+    imageCredit?: string;
     objectFit: string;
     timestamp: string;
     category: Category;

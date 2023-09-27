@@ -35,11 +35,18 @@ export function IndividualPost() {
                 <article className="w-full mb-24">
                     <div className="mx-auto max-w-prose">
                         {currentPost.imageURL && (
-                            <img
-                                src={currentPost.imageURL}
-                                alt="article image"
-                                className={`${currentPost.objectFit} w-full mx-auto mb-10 max-h-72`}
-                            />
+                            <div className="mb-6">
+                                <img
+                                    src={currentPost.imageURL}
+                                    alt="article image"
+                                    className={`${currentPost.objectFit} w-full mx-auto max-h-72`}
+                                />
+                                {currentPost.imageURL && currentPost.imageCredit && (
+                                    <p className="mt-2 text-xs italic text-right">
+                                        Image from {currentPost.imageCredit}
+                                    </p>
+                                )}
+                            </div>
                         )}
                         {/* textWrap not recognised but experimental in Chrome 114+ */}
                         <h1

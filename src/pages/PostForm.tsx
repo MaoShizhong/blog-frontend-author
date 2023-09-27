@@ -107,6 +107,16 @@ export function PostForm() {
             </label>
 
             <label className="flex flex-col">
+                Image credit:
+                <input
+                    name="credit"
+                    type="text"
+                    className="px-2 py-1 border border-black rounded-md"
+                    defaultValue={postToEdit && postToEdit.imageCredit}
+                />
+            </label>
+
+            <label className="flex flex-col">
                 Image object fit:
                 <select
                     name="objectfit"
