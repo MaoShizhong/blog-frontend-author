@@ -41,8 +41,8 @@ export function SignupFormFields({ errors }: SignupFormProps) {
             <label className="flex flex-col">
                 Password (required):
                 <input
-                    type="password"
                     name="password"
+                    type="password"
                     pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
                     className="px-2 py-1 border border-black rounded-md"
                     required
@@ -51,6 +51,7 @@ export function SignupFormFields({ errors }: SignupFormProps) {
             <label className="flex flex-col">
                 Confirm password (required):
                 <input
+                    name="confirm"
                     type="password"
                     className="px-2 py-1 border border-black rounded-md"
                     required
