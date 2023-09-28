@@ -1,14 +1,13 @@
 import { Link, NavLink } from 'react-router-dom';
 import { UserContext } from '../App';
 import { useContext } from 'react';
-import { getFetchOptions } from '../helpers/form_options';
-import { API_DOMAIN } from '../helpers/domain';
+import { fetchData } from '../helpers/form_options';
 
 export function Header() {
     const { username, redirectToLogin } = useContext(UserContext);
 
     async function logout(): Promise<void> {
-        await fetch(`${API_DOMAIN}/auth/logout`, getFetchOptions('GET'));
+        await fetchData('/auth/tokens', 'DELETE');
         redirectToLogin();
     }
 

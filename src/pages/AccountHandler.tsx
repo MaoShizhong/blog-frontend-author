@@ -1,9 +1,9 @@
 import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { UserContext } from '../App';
-import { getFetchOptions } from '../helpers/form_options';
+import { fetchData } from '../helpers/form_options';
 import { SignupFormFields } from '../components/SignupFormFields';
 import { LoginFormFields } from '../components/LoginFormFields';
-import { API_DOMAIN } from '../helpers/domain';
+import { useNavigate } from 'react-router-dom';
 
 type ValidationError = {
     type: string;
@@ -26,6 +26,7 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
     const { username, redirectToPosts } = useContext(UserContext);
 
     const formRef = useRef<HTMLFormElement>(null);
+    const navigateTo = useNavigate();
 
     useEffect((): void => {
         if (username) redirectToPosts();
@@ -33,23 +34,19 @@ export function AccountHandler({ loginType }: AccountHandlerProps) {
 
     async function login(e: FormEvent, loginType: AccessType): Promise<void> {
         e.preventDefault();
+
+        const endpoint = loginType === 'login' ? 'tokens' : 'user';
         const formData = new FormData(formRef.current!);
 
-        try {
-            const res = await fetch(
-                `${API_DOMAIN}/auth/${loginType}`,
-                getFetchOptions('POST', formData)
-            );
+        const res = await fetchData(`/auth/${endpoint}`, 'POST', formData);
 
-            if (res.ok) {
-                const user = await res.json();
-                redirectToPosts(user.username);
-            } else {
-                // Mostly form validation errors
-                setErrors(await res.json());
-            }
-        } catch (error) {
-            console.error(error);
+        if (res instanceof Error) {
+            navigateTo('/error');
+        } else if (!res.ok) {
+            setErrors(await res.json());
+        } else {
+            const user = await res.json();
+            redirectToPosts(user.username);
         }
     }
 

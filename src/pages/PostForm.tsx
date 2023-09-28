@@ -2,10 +2,9 @@ import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { UserContext } from '../App';
 import { ErrorList } from '../components/ErrorList';
 import { Errors } from './AccountHandler';
-import { getFetchOptions, HTTPVerb } from '../helpers/form_options';
+import { fetchData, HTTPVerb } from '../helpers/form_options';
 import { useLocation, useNavigate } from 'react-router-dom';
 import he from 'he';
-import { API_DOMAIN } from '../helpers/domain';
 
 const categories = ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'] as const;
 const objectFits = ['object-contain', 'object-cover'] as const;
@@ -29,44 +28,20 @@ export function PostForm() {
 
         const request = {
             method: (postToEdit ? 'PUT' : 'POST') as HTTPVerb,
-            endpoint: postToEdit ? `posts/${postToEdit._id}` : 'posts',
+            endpoint: postToEdit ? `/posts/${postToEdit._id}` : '/posts',
         };
 
         const formData = new FormData(formRef.current!);
 
-        try {
-            const res = await fetch(
-                `${API_DOMAIN}/${request.endpoint}`,
-                getFetchOptions(request.method, formData)
-            );
+        const res = await fetchData(request.endpoint, request.method, formData);
 
-            if (res.ok) {
-                const post = await res.json();
-                navigateTo(`/posts/${post._id}`, { replace: true, state: { post: post } });
-            } else {
-                const refreshRes = await fetch(
-                    `${API_DOMAIN}/auth/refresh`,
-                    getFetchOptions('GET')
-                );
-
-                if (refreshRes.ok) {
-                    const retryRes = await fetch(
-                        `${API_DOMAIN}/${request.endpoint}`,
-                        getFetchOptions(request.method, formData)
-                    );
-
-                    if (retryRes.ok) {
-                        const post = await retryRes.json();
-                        navigateTo(`/posts/${post._id}`, { replace: true, state: { post: post } });
-                    } else {
-                        setErrors(await retryRes.json());
-                    }
-                } else {
-                    redirectToLogin();
-                }
-            }
-        } catch (error) {
-            console.error(error);
+        if (res instanceof Error) {
+            navigateTo('/error');
+        } else if (!res.ok) {
+            setErrors(await res.json());
+        } else {
+            const post = await res.json();
+            navigateTo(`/posts/${post._id}`, { replace: true, state: { post: post } });
         }
     }
 

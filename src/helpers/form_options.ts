@@ -6,7 +6,41 @@ type FormOptions = {
     body?: URLSearchParams;
 };
 
-export function getFetchOptions(method: HTTPVerb, formData?: FormData): FormOptions {
+const API_DOMAIN = import.meta.env.VITE_PROD_API;
+
+export async function fetchData(
+    endpoint: string,
+    method: HTTPVerb,
+    formData?: FormData,
+    isSignupLogin: boolean = false
+): Promise<Response | Error> {
+    const isAppLoadRefresh = endpoint === '/auth/tokens' && method === 'PUT';
+
+    try {
+        const res = await fetch(`${API_DOMAIN}${endpoint}`, getFetchOptions(method, formData));
+
+        if (res.ok || isSignupLogin || isAppLoadRefresh) {
+            return res;
+        } else {
+            const refresh = await fetch(`${API_DOMAIN}/auth/tokens`, getFetchOptions('PUT'));
+
+            if (!refresh.ok) {
+                return refresh;
+            } else {
+                const retry = await fetch(
+                    `${API_DOMAIN}${endpoint}`,
+                    getFetchOptions(method, formData)
+                );
+
+                return retry;
+            }
+        }
+    } catch (error) {
+        return error as Error;
+    }
+}
+
+function getFetchOptions(method: HTTPVerb, formData?: FormData): FormOptions {
     const formOptions: FormOptions = {
         method: method,
         credentials: 'include',

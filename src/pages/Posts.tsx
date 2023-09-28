@@ -1,10 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Errors } from './AccountHandler';
 import { ErrorList } from '../components/ErrorList';
-import { getFetchOptions } from '../helpers/form_options';
-import { API_DOMAIN } from '../helpers/domain';
+import { fetchData } from '../helpers/form_options';
 
 type Author = {
     name: string;
@@ -34,23 +33,25 @@ export function Posts() {
 
     const { username, redirectToLogin } = useContext(UserContext);
 
+    const navigateTo = useNavigate();
+
     useEffect((): void => {
         if (!username) redirectToLogin();
     }, [username, redirectToLogin]);
 
     useEffect((): void => {
         (async (): Promise<void> => {
-            try {
-                const res = await fetch(`${API_DOMAIN}/posts`, getFetchOptions('GET'));
+            const res = await fetchData('/posts', 'GET');
 
-                const resAsJSON = await res.json();
-
-                res.ok ? setPosts(resAsJSON) : setErrors(resAsJSON);
-            } catch (error) {
-                console.error(error);
+            if (res instanceof Error) {
+                navigateTo('/error');
+            } else if (!res.ok) {
+                setErrors(await res.json());
+            } else {
+                setPosts(await res.json());
             }
         })();
-    }, []);
+    }, [navigateTo]);
 
     return (
         <main className="px-6 mt-10 bg-white border-2 sm:px-10 w-main drop-shadow-2xl border-slate-50 rounded-3xl">

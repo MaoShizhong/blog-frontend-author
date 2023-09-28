@@ -1,8 +1,7 @@
 import { Post } from '../pages/Posts';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getFetchOptions } from '../helpers/form_options';
-import { API_DOMAIN } from '../helpers/domain';
+import { fetchData } from '../helpers/form_options';
 import { UserContext } from '../App';
 
 type PostButtonsProps = {
@@ -30,45 +29,19 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
         action: 'feature' | 'publish',
         isToActivate: boolean
     ): Promise<void> {
-        try {
-            const res = await fetch(
-                `${API_DOMAIN}/posts/${currentPost._id}?${action}=${isToActivate}`,
-                getFetchOptions('PATCH')
-            );
+        const res = await fetchData(`/posts/${currentPost._id}?${action}=${isToActivate}`, 'PATCH');
 
-            if (res.ok) {
-                const { editedPost, existingFeaturedPosts } = await res.json();
+        if (res instanceof Error) {
+            navigateTo('/error');
+        } else if (!res.ok) {
+            redirectToLogin();
+        } else {
+            const { editedPost, existingFeaturedPosts } = await res.json();
+            setCurrentPost(editedPost);
 
-                setCurrentPost(editedPost);
-
-                if (action === 'feature') {
-                    setExistingFeatures(existingFeaturedPosts);
-                }
-            } else {
-                const refreshRes = await fetch(
-                    `${API_DOMAIN}/auth/refresh`,
-                    getFetchOptions('GET')
-                );
-
-                if (refreshRes.ok) {
-                    const retryRes = await fetch(
-                        `${API_DOMAIN}/posts/${currentPost._id}?${action}=${isToActivate}`,
-                        getFetchOptions('PATCH')
-                    );
-                    if (retryRes.ok) {
-                        const { editedPost, existingFeaturedPosts } = await res.json();
-                        setCurrentPost(editedPost);
-
-                        if (action === 'feature') {
-                            setExistingFeatures(existingFeaturedPosts);
-                        }
-                    }
-                } else {
-                    redirectToLogin();
-                }
+            if (action === 'feature') {
+                setExistingFeatures(existingFeaturedPosts);
             }
-        } catch (error) {
-            console.error(error);
         }
 
         // reset 'CONFIRM DELETE' button to 'Delete post' if previously clicked
@@ -76,34 +49,14 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
     }
 
     async function deletePost(): Promise<void> {
-        try {
-            const res = await fetch(
-                `${API_DOMAIN}/posts/${currentPost._id}`,
-                getFetchOptions('DELETE')
-            );
+        const res = await fetchData(`/posts/${currentPost._id}`, 'DELETE');
 
-            if (res.ok) {
-                navigateTo('/posts', { replace: true });
-            } else {
-                const refreshRes = await fetch(
-                    `${API_DOMAIN}/auth/refresh`,
-                    getFetchOptions('GET')
-                );
-
-                if (refreshRes.ok) {
-                    const retryRes = await fetch(
-                        `${API_DOMAIN}/posts/${currentPost._id}`,
-                        getFetchOptions('DELETE')
-                    );
-                    if (retryRes.ok) {
-                        navigateTo('/posts', { replace: true });
-                    }
-                } else {
-                    redirectToLogin();
-                }
-            }
-        } catch (error) {
-            console.error(error);
+        if (res instanceof Error) {
+            navigateTo('/error');
+        } else if (!res.ok) {
+            redirectToLogin();
+        } else {
+            navigateTo('/posts', { replace: true });
         }
     }
 
@@ -148,38 +101,25 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
                     Edit
                 </Link>
 
-                {currentPost.isFeatured ? (
-                    <button
-                        className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => toggleFeaturedPublished('feature', false)}
-                    >
-                        Unfeature
-                    </button>
-                ) : (
-                    <button
-                        className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => toggleFeaturedPublished('feature', true)}
-                    >
-                        Feature
-                    </button>
-                )}
+                <button
+                    className="transition hover:text-slate-600"
+                    onClick={(): Promise<void> =>
+                        toggleFeaturedPublished('feature', !currentPost.isFeatured)
+                    }
+                >
+                    {currentPost.isFeatured ? 'Unfeature' : 'Feature'}
+                </button>
 
-                {currentPost.isPublished ? (
-                    <button
-                        className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => toggleFeaturedPublished('publish', false)}
-                    >
-                        Unpublish
-                    </button>
-                ) : (
-                    <button
-                        className="transition hover:text-slate-600"
-                        onClick={(): Promise<void> => toggleFeaturedPublished('publish', true)}
-                    >
-                        Publish
-                    </button>
-                )}
+                <button
+                    className="transition hover:text-slate-600"
+                    onClick={(): Promise<void> =>
+                        toggleFeaturedPublished('publish', !currentPost.isPublished)
+                    }
+                >
+                    {currentPost.isPublished ? 'Unpublish' : 'Publish'}
+                </button>
             </div>
+
             {currentPost.isPublished && (
                 <a
                     href={currentPost.url}
