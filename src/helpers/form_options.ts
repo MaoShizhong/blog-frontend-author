@@ -8,7 +8,7 @@ type FormOptions = {
     body?: URLSearchParams;
 };
 
-const mode = 'dev' as Mode;
+const mode = 'prod' as Mode;
 
 const API_DOMAIN = mode === 'prod' ? import.meta.env.VITE_PROD_API : import.meta.env.VITE_DEV_API;
 

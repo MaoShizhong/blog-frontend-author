@@ -4,7 +4,7 @@
 
 API: [Repo](https://github.com/MaoShizhong/blog-API)
 
-Main client: [Repo](https://github.com/MaoShizhong/blog-frontend-reader) | [Live](https://dotblog.netlify.app/)
+Main client: [Repo](https://github.com/MaoShizhong/dotBLOG) | [Live](https://dotblog.netlify.app/)
 
 ![Alt text](desktop.png)
 ![Alt text](mobile.png)

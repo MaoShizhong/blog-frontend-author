@@ -23,7 +23,7 @@ export function Header() {
                         <p className="absolute right-0 text-xs -bottom-2.5">CMS</p>
                     </Link>
                     <a
-                        href="https://github.com/MaoShizhong/blog-frontend-reader"
+                        href="https://github.com/MaoShizhong/dotBLOG-CMS"
                         target="_blank"
                         rel="noreferrer"
                     >

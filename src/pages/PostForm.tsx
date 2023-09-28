@@ -130,7 +130,7 @@ export function PostForm() {
                 <textarea
                     name="text"
                     rows={20}
-                    className="px-2 py-1 leading-6 border border-black rounded-md"
+                    className="px-2 py-1 font-mono leading-6 border border-black rounded-md"
                     defaultValue={postToEdit && he.decode(postToEdit.text)}
                     required
                 ></textarea>

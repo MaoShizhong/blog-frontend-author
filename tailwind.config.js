@@ -4,12 +4,12 @@ import tailwindTypography from '@tailwindcss/typography';
 export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     theme: {
-        fontFamily: {
-            jost: ['Jost', 'sans-serif', 'system-ui'],
-        },
         extend: {
             maxWidth: {
                 prose: '72ch',
+            },
+            fontFamily: {
+                jost: ['Jost', 'sans-serif', 'system-ui'],
             },
             width: {
                 form: 'min(90vw,900px)',
