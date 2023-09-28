@@ -1,3 +1,5 @@
+type Mode = 'prod' | 'dev';
+
 export type HTTPVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 type FormOptions = {
@@ -6,7 +8,9 @@ type FormOptions = {
     body?: URLSearchParams;
 };
 
-const API_DOMAIN = import.meta.env.VITE_PROD_API;
+const mode = 'dev' as Mode;
+
+const API_DOMAIN = mode === 'prod' ? import.meta.env.VITE_PROD_API : import.meta.env.VITE_DEV_API;
 
 export async function fetchData(
     endpoint: string,
