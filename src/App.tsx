@@ -47,7 +47,7 @@ export function App() {
         const res = await fetchData('/auth/tokens', 'PUT');
 
         if (res instanceof Error) {
-            console.error(res);
+            navigateTo('/error');
         } else if (!res.ok) {
             // Force log out if no valid refresh token
             redirectToLogin();
