@@ -53,7 +53,7 @@ export function IndividualPost() {
                             className="my-4 text-3xl font-bold text-center sm:text-4xl"
                             ref={titleRef}
                         >
-                            {currentPost.title}
+                            {htmlEntities.decode(currentPost.title)}
                         </h1>
 
                         <p className="mb-8 italic text-center">

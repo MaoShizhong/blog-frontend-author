@@ -66,7 +66,7 @@ export function PostForm() {
                     name="title"
                     type="text"
                     className="px-2 py-1 border border-black rounded-md"
-                    defaultValue={postToEdit && postToEdit.title}
+                    defaultValue={postToEdit && he.decode(postToEdit.title)}
                     required
                 />
             </label>
