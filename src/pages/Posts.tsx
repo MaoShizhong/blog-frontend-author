@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Errors } from './AccountHandler';
 import { ErrorList } from '../components/ErrorList';
 import { fetchData } from '../helpers/form_options';
+import htmlEntities from 'he';
 
 type Author = {
     name: string;
@@ -69,7 +70,7 @@ export function Posts() {
                             state={{ post: post }}
                             className="text-3xl transition hover:text-slate-500"
                         >
-                            {post.title}
+                            {htmlEntities.decode(post.title)}
                         </Link>
                         <p className="text-sm italic">
                             {new Date(post.timestamp).toDateString()} -{' '}
