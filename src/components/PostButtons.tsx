@@ -1,8 +1,9 @@
-import { Post } from '../pages/Posts';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Post } from '../pages/Posts';
 import { fetchData } from '../helpers/form_options';
 import { UserContext } from '../App';
+import he from 'he';
 
 type PostButtonsProps = {
     currentPost: Post;
@@ -70,7 +71,7 @@ export function PostButtons({ currentPost, setCurrentPost }: PostButtonsProps) {
                     {existingFeatures.map(
                         (featuredPost, i): JSX.Element => (
                             <p key={i} className="text-center text-red-800">
-                                {featuredPost.title}
+                                {he.decode(featuredPost.title)}
                             </p>
                         )
                     )}

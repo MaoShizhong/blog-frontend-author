@@ -48,7 +48,7 @@ export function IndividualPost() {
                                 )}
                             </div>
                         )}
-                        {/* textWrap not recognised but experimental in Chrome 114+ */}
+
                         <h1
                             className="my-4 text-3xl font-bold text-center sm:text-4xl"
                             ref={titleRef}
